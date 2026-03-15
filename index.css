@@ -1,4 +1,3 @@
-/* 1. Global Reset & Stage Setup */
 body, html {
   margin: 0;
   padding: 0;
@@ -12,7 +11,6 @@ body, html {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* This prevents the "vibration" or blur on transparent layers */
   backface-visibility: hidden;
   transform: translateZ(0);
 }
@@ -23,29 +21,26 @@ body {
   -webkit-backdrop-filter: blur(8px);
   color: white; 
   
-  /* Absolute positioning relative to #character */
   position: absolute;
   bottom: 100%; 
   left: 50%;
-  margin-bottom: 20px; /* Reduced slightly to look more natural */
+  margin-bottom: 20px; 
   transform: translateX(-50%);
 
-  /* Styling fixes for 'max-content' */
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle edge light */
+  border: 1px solid rgba(255, 255, 255, 0.1); 
   text-align: center;
   
   width: max-content;
   max-width: 220px;
   pointer-events: auto;
   
-  /* Prevent the text from looking blurry on some screens */
   backface-visibility: hidden;
 }
 
 #bubble-content {
-  color: #f0f0f0; /* Slightly off-white for better reading */
+  color: #f0f0f0; 
   font-size: 13px;
   line-height: 1.5;
   margin-bottom: 8px;
@@ -63,22 +58,18 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Triangle pointer for the bubble */
 #speech-bubble::after {
   content: "";
   position: absolute;
   
-  /* This needs to be the same height/width as your current triangle */
   bottom: -10px; 
   left: 20px;
   
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   
-  /* CHANGE THIS LINE: Use the same color as your bubble */
   border-top: 10px solid rgba(40, 40, 40, 0.75); 
   
-  /* Optional: Add the same blur if you want, but usually solid looks better for the tip */
   filter: blur(0.5px); 
 }
 
@@ -89,7 +80,6 @@ body {
   padding-top: 8px;
   outline: none;
   font-size: 13px;
-  /* Make the typing text white too */
   color: white; 
 }
 
@@ -98,14 +88,11 @@ body {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Ensure the input is hidden when not in use, or keep it visible 
-   if you want the user to always see the chat option */
 #ghost-input.hidden {
   opacity: 0;
   pointer-events: none;
 }
 
-/* 2. Ghost Container & Hitbox */
 #character {
   position: absolute;
   width: 110px; /* body width + padding */
@@ -136,7 +123,6 @@ body {
   align-items: center;
   justify-content: center;
   
-  /* Jagged Bottom Mask */
   -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 85%),
                       linear-gradient(45deg, transparent 75%, black 75%),
                       linear-gradient(-45deg, transparent 75%, black 75%);
@@ -172,7 +158,6 @@ body {
   transform: translate(-50%, -50%);
 }
 
-/* 5. Animations & Interaction Blockers */
 @keyframes blink {
   0%, 90%, 100% { transform: scaleY(1); }
   95% { transform: scaleY(0.1); }
@@ -188,7 +173,6 @@ body {
   animation: pop 0.3s ease-out;
 }
 
-/* Children shouldn't interfere with mouse events */
 .eye, .pupil, .eye-row {
   pointer-events: none; 
 }
@@ -196,5 +180,5 @@ body {
 .hidden {
   display: none !important;
   opacity: 0;
-  pointer-events: none; /* Prevents clicking a ghost bubble */
+  pointer-events: none;
 }
