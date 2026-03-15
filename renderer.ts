@@ -29,13 +29,12 @@
 
 import './index.css';
 
-// --- 1. STATE MANAGEMENT ---
 let isPaused = false;
 let isChatOpen = false;
 let posX = 0;
 let direction = 1;
 let time = 0;
-let baseY = 200; // This is your new starting height
+let baseY = 200; 
 
 declare global {
   interface Window {
@@ -55,7 +54,6 @@ const reminders = [
 ];
 const reminderInterval = 10000;
 
-// --- 2. ELEMENT SELECTORS ---
 const clickBox = document.querySelector('.click-box') as HTMLElement;
 const ghostBody = document.querySelector('.ghost-body') as HTMLElement;
 const ghostContainer = document.getElementById('character') as HTMLElement;
@@ -63,7 +61,6 @@ const bubble = document.getElementById('speech-bubble') as HTMLElement;
 const bubbleContent = document.getElementById('bubble-content') as HTMLElement;
 const ghostInput = document.getElementById('ghost-input') as HTMLInputElement;
 
-// --- 3. HELPER FUNCTIONS ---
 function closeChat() {
   isChatOpen = false;
   isPaused = false;
@@ -73,20 +70,15 @@ function closeChat() {
   ghostInput.value = "";
   bubbleContent.classList.remove('hidden');
   bubbleContent.innerText = "";
-  // Return to "Ghost Mode" so we can click through to the desktop
   window.electronAPI.setIgnoreMouseEvents(true, { forward: true });
 }
 
-// --- 4. INTERACTION LOGIC ---
-
-// Mouse Hover: Toggle between "Solid" and "Click-through"
 [clickBox, bubble, ghostInput].forEach(el => {
   if (el) {
     el.addEventListener('mouseenter', () => {
       window.electronAPI.setIgnoreMouseEvents(false);
     });
     el.addEventListener('mouseleave', () => {
-      // Stay solid if the chat is open so we can keep typing
       if (!isChatOpen) {
         window.electronAPI.setIgnoreMouseEvents(true, { forward: true });
       }
@@ -94,29 +86,24 @@ function closeChat() {
   }
 });
 
-// Click Ghost: Toggle Chat Window
 clickBox.addEventListener('click', (e) => {
-  // If clicking the input box inside the bubble, don't toggle the ghost
   if (e.target === ghostInput) return;
 
   isChatOpen = !isChatOpen;
 
   if (isChatOpen) {
     isPaused = true;
-    window.electronAPI.setIgnoreMouseEvents(false); // Enable keyboard/mouse
+    window.electronAPI.setIgnoreMouseEvents(false); 
     
-    // UI Setup
     bubble.classList.remove('hidden');
     bubble.classList.add('visible');
     bubbleContent.classList.add('hidden'); 
     ghostInput.classList.remove('hidden');
     
-    // Small delay to ensure the window is focused before focusing the input
     setTimeout(() => {
       ghostInput.focus();
     }, 50);
 
-    // Visual "Jump" animation
     if (ghostBody) {
       ghostBody.style.transition = 'transform 0.1s ease-out';
       ghostBody.style.transform = 'scale(1.2) translateY(-10px)';
@@ -127,13 +114,11 @@ clickBox.addEventListener('click', (e) => {
   }
 });
 
-// Handle AI Input (Enter Key)
 ghostInput.addEventListener('keypress', async (e) => {
   if (e.key === 'Enter') {
     const prompt = ghostInput.value.trim();
     if (!prompt) return;
 
-    // Show "Thinking" state
     ghostInput.classList.add('hidden');
     bubbleContent.classList.remove('hidden');
     bubbleContent.innerText = "...";
@@ -142,7 +127,6 @@ ghostInput.addEventListener('keypress', async (e) => {
       const response = await window.electronAPI.askAI(prompt);
       bubbleContent.innerText = response;
       
-      // Stay on screen for 8 seconds, then auto-resume movement
       setTimeout(() => {
         if (isChatOpen) closeChat();
       }, 8000);
@@ -154,7 +138,6 @@ ghostInput.addEventListener('keypress', async (e) => {
   }
 });
 
-// --- 5. ANIMATION LOOP ---
 function animate() {
   if (isPaused) {
     requestAnimationFrame(animate); 
@@ -163,20 +146,16 @@ function animate() {
 
   const safeBound = window.innerWidth - ghostContainer.offsetWidth;
 
-  // Horizontal Movement
   posX += 0.5 * direction; 
   if (posX >= safeBound || posX <= 0) direction *= -1;
 
-  // Vertical Bobbing
   time += 0.03;
   const bobY = Math.sin(time) * 10;
   const flip = direction === 1 ? -1 : 1;
 
-  // FIX: Use the global 'baseY' variable so it doesn't reset to 0
   ghostContainer.style.transform = `translate3d(${posX}px, ${baseY + bobY}px, 0) scaleX(${flip})`;
 
   if (bubble && !bubble.classList.contains('hidden')) {
-    // Keep the bubble from flipping with the ghost
     bubble.style.transform = `translateX(-50%) scaleX(${flip})`;
   }
 
@@ -190,13 +169,10 @@ function sendGhostReminder() {
   const randomMessage = reminders[Math.floor(Math.random() * reminders.length)];
   bubbleContent.innerText = randomMessage;
 
-  // Show the text, hide the input
   ghostInput.classList.add('hidden');
   bubbleContent.classList.remove('hidden');
   bubble.classList.remove('hidden');
 
-  // TRIGGER THE JUMP WITHOUT BREAKING TRANSFORM
-  // Use a CSS class for the jump instead of manual style overrides
   ghostBody.classList.add('jump-anim');
   setTimeout(() => ghostBody.classList.remove('jump-anim'), 400);
 
@@ -207,5 +183,4 @@ function sendGhostReminder() {
 
 setInterval(sendGhostReminder, reminderInterval);
 
-// Start everything
 animate();
